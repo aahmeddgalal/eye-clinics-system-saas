@@ -4,12 +4,23 @@ import { useState } from 'react';
 import { login } from './actions';
 
 export default function LoginPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (formData) => {
+  // دالة لتعبئة البيانات تلقائياً
+  const fillCredentials = () => {
+    setEmail('galileo@dev.com');
+    setPassword('galileo123');
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setIsLoading(true);
     setError(null);
+
+    const formData = new FormData(e.currentTarget);
     const result = await login(formData);
     if (result?.error) {
       setError(result.error);
@@ -18,10 +29,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4" dir="rtl">
       {/* Container */}
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
-        
+
         {/* Header / Brand */}
         <div className="bg-blue-600 px-8 py-10 text-center">
           <div className="mx-auto w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm">
@@ -35,13 +46,30 @@ export default function LoginPage() {
 
         {/* Form */}
         <div className="p-8">
-          <form action={handleSubmit} className="space-y-6">
+          {/* كارت لتعبئة بيانات التجربة بضغطة واحدة */}
+          <div className="mb-6 p-3 bg-slate-100 rounded-lg border border-slate-200 text-xs text-slate-600 flex justify-between items-center">
+            <div>
+              <p className="font-semibold text-slate-700">بيانات التجربة:</p>
+              <p dir="ltr" className="text-start text-slate-500">galileo@dev.com | galileo123</p>
+            </div>
+            <button
+              type="button"
+              onClick={fillCredentials}
+              className="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-2.5 py-1.5 rounded transition-colors text-xs"
+            >
+              تجربة سريعة
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">البريد الإلكتروني</label>
               <input
                 id="email"
                 name="email"
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="admin@clinic.com"
                 dir="ltr"
@@ -56,6 +84,8 @@ export default function LoginPage() {
                 id="password"
                 name="password"
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
                 dir="ltr"
@@ -89,7 +119,7 @@ export default function LoginPage() {
               )}
             </button>
           </form>
-          
+
           <div className="mt-8 text-center text-sm text-slate-500">
             <p>للموظفين المصرح لهم فقط. للدعم، اتصل بقسم تكنولوجيا المعلومات.</p>
           </div>
